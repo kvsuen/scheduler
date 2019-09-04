@@ -10,7 +10,7 @@ import { getAppointmentsForDay, getInterview, getInterviewersForDay } from "help
 export default function Application() {
   const [state, setState] = useState({
     day: "Monday",
-    days: [],
+    days: [], 
     appointments: {},
     interviewers: {}
   });
@@ -19,6 +19,48 @@ export default function Application() {
 
   const appointments = getAppointmentsForDay(state, state.day);
   const interviewers = getInterviewersForDay(state, state.day);
+
+  function bookInterview(id, interview) {
+    return Axios.put(`/api/appointments/${id}`, {interview})
+      .then(response => {
+        if (response.status >= 200 && response.status < 300) {
+          const appointment = {
+            ...state.appointments[id],
+            interview: { ...interview }
+          };
+      
+          const appointments = {
+            ...state.appointments,
+            [id]: appointment
+          };
+      
+          setState({...state, appointments})
+        } else {
+          console.log(`There was an error. Response was ${response}`);
+        }
+      }).catch(error => console.log(error));
+  }
+
+  function cancelInterview(id) {
+    return Axios.delete(`/api/appointments/${id}`)
+      .then(response => {
+        if (response.status >= 200 && response.status < 300) {
+          const appointment = {
+            ...state.appointments[id],
+            interview: null
+          };
+      
+          const appointments = {
+            ...state.appointments,
+            [id]: appointment
+          };
+      
+          setState({...state, appointments});
+        } else {
+          console.log(`There was an error. Response was ${response}`);
+        }
+      }).catch(error => console.log(error));
+  }
 
   useEffect(() => {
     Promise.all([
@@ -52,7 +94,14 @@ export default function Application() {
       <section className="schedule">
         {appointments.map(elem => {
           const interview = getInterview(state, elem.interview);
-          return <Appointment {...elem} key={elem.id} interview={interview} interviewers={interviewers} />;
+          return <Appointment 
+            {...elem} 
+            key={elem.id} 
+            interview={interview} 
+            interviewers={interviewers} 
+            bookInterview={bookInterview}
+            cancelInterview={cancelInterview}
+          />;
         })}
         <Appointment key="last" time="5pm" />
       </section>

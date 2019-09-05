@@ -5,6 +5,7 @@ const useApplicationData = () => {
   const SET_DAY = 'SET_DAY';
   const SET_APPLICATION_DATA = 'SET_APPLICATION_DATA';
   const SET_INTERVIEW = 'SET_INTERVIEW';
+  const SET_SPOTS = "SET_SPOTS";
 
   const reducer = (state, action) => {
     switch (action.type) {
@@ -23,9 +24,13 @@ const useApplicationData = () => {
       case SET_INTERVIEW:
         return {
           ...state,
-          appointments: action.value[0],
-          days: action.value[1]
+          appointments: action.value
         };
+      case SET_SPOTS:
+        return {
+          ...state,
+          days: action.value
+        }
       default:
         throw new Error(
           `Tried to reduce with unsupported action type: ${action.type}`
@@ -33,8 +38,14 @@ const useApplicationData = () => {
     }
   };
 
+  const getWeekDay = date => {
+    const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const day = date.getDay();
+    return weekdays[day];
+  }
+
   const [state, dispatch] = useReducer(reducer, {
-    day: 'Monday',
+    day: getWeekDay(new Date()),
     days: [],
     appointments: {},
     interviewers: {}
@@ -98,15 +109,14 @@ const useApplicationData = () => {
             [id]: appointment
           };
 
-          const dayId = getDayId(id);
           // only change spots if saving a new appointment, rather than on edit
-          let spots = state.days[dayId].spots;
           if (!state.appointments[id].interview) {
-            spots = state.days[dayId].spots - 1;
+            const dayId = getDayId(id);
+            const days = updateObjectInArray(state.days, {index: dayId, item: state.days[dayId].spots - 1});
+            dispatch({type: SET_SPOTS, value: days})
           }
 
-          const days = updateObjectInArray(state.days, {index: dayId, item: spots});
-          dispatch({ type: SET_INTERVIEW, value: [appointments, days] });
+          dispatch({ type: SET_INTERVIEW, value: appointments });
         } else {
           console.log(`There was an error. Response was ${response}`);
         }
@@ -129,7 +139,8 @@ const useApplicationData = () => {
 
         const dayId = getDayId(id);
         const days = updateObjectInArray(state.days, {index: dayId, item: state.days[dayId].spots + 1});
-        dispatch({ type: SET_INTERVIEW, value: [appointments, days] });
+        dispatch({type: SET_SPOTS, value: days})
+        dispatch({ type: SET_INTERVIEW, value: appointments });
       } else {
         console.log(`There was an error. Response was ${response}`);
       }

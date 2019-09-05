@@ -6,10 +6,10 @@ import Empty from './Empty';
 import Form from './Form';
 import Status from './Status';
 import Confirm from './Confirm';
+import Error from './Error';
 
 import './styles.scss';
 import useVisualMode from 'hooks/useVisualMode';
-import Error from './Error';
 
 export default function Appointment({ 
   id,

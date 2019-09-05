@@ -8,11 +8,11 @@ const useVisualMode = (initial) => {
     if (replace) {
       setMode(newMode);
       if (history.length > 1) {
-        setHistory([...history.slice(0, history.length - 1), newMode]);
+        setHistory(prev => [...prev.slice(0, history.length - 1), newMode]);
       }
     } else {
       setMode(newMode);
-      setHistory([...history, newMode]);
+      setHistory(prev => [...prev, newMode]);
     }
 
   }
@@ -20,7 +20,7 @@ const useVisualMode = (initial) => {
   const back = () => {
     if (history.length > 1) {
       setMode(history[history.length - 2]);
-      setHistory([...history.slice(0, history.length - 1)]);
+      setHistory(prev => [...prev.slice(0, history.length - 1)]);
     }
   }
 

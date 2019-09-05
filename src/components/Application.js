@@ -38,8 +38,8 @@ export default function Application() {
         } else {
           console.log(`There was an error. Response was ${response}`);
         }
-      }).catch(error => console.log(error));
-  }
+      });
+  };
 
   function cancelInterview(id) {
     return Axios.delete(`/api/appointments/${id}`)
@@ -59,8 +59,8 @@ export default function Application() {
         } else {
           console.log(`There was an error. Response was ${response}`);
         }
-      }).catch(error => console.log(error));
-  }
+      });
+  };
 
   useEffect(() => {
     Promise.all([

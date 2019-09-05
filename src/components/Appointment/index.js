@@ -9,6 +9,7 @@ import Confirm from './Confirm';
 
 import './styles.scss';
 import useVisualMode from 'hooks/useVisualMode';
+import Error from './Error';
 
 export default function Appointment({ 
   id,
@@ -26,6 +27,8 @@ export default function Appointment({
   const CONFIRM = 'CONFIRM';
   const DELETING = 'DELETING';
   const EDIT = 'EDIT';
+  const ERROR_SAVE = 'ERROR_SAVE';
+  const ERROR_DELETE = 'ERROR_DELETE';
 
   const { mode, transition, back } = useVisualMode(interview ? SHOW : EMPTY);
   
@@ -34,19 +37,28 @@ export default function Appointment({
       student: name,
       interviewer
     };
-    
-    transition(SAVING);
 
-    bookInterview(id, interview)
-      .then(() => transition(SHOW))
-      .catch((err) => console.log(err))
+    if (!interview.student || !interview.interviewer) {
+      transition(ERROR_SAVE, true)
+    } else {
+      transition(SAVING, true);
+      bookInterview(id, interview)
+        .then(() => transition(SHOW))
+        .catch((err) => {
+          transition(ERROR_SAVE, true);
+          console.log(err);
+        });
+    }
   }
 
   function deleteItem() {
-    transition(DELETING);
+    transition(DELETING, true);
     cancelInterview(id)
       .then(() => transition(EMPTY))
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        transition(ERROR_DELETE, true);
+        console.log(err);
+      });
   }
 
   return (
@@ -89,6 +101,18 @@ export default function Appointment({
         interviewers={interviewers}
         onSave={save}
         onCancel={() => back()}
+        />
+      )}
+      {mode === ERROR_SAVE && (
+        <Error 
+          message={'Error with saving appointment, please try again.'}
+          onClose={() => back()} 
+        />
+      )}
+      {mode === ERROR_DELETE && (
+        <Error 
+          message={'Error with deleting, please try again.'}
+          onClose={() => back()} 
         />
       )}
     </article>

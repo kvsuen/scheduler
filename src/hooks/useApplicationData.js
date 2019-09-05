@@ -30,7 +30,8 @@ const useApplicationData = () => {
       case SET_INTERVIEW:
         return {
           ...state,
-          appointments: action.value
+          appointments: action.value[0]/*,
+          days: action.value[1] */
         };
       default:
         throw new Error(
@@ -65,7 +66,14 @@ const useApplicationData = () => {
             [id]: appointment
           };
 
-          dispatch({ type: SET_INTERVIEW, value: appointments });
+          const days = {
+            ...state.days,
+            spots: 10
+          };
+
+          const arr = [appointments, days]
+
+          dispatch({ type: SET_INTERVIEW, value: arr });
         } else {
           console.log(`There was an error. Response was ${response}`);
         }

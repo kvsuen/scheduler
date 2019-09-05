@@ -40,6 +40,9 @@ const useApplicationData = () => {
 
   const getWeekDay = date => {
     const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    if (typeof date === 'string') {
+      return weekdays.indexOf(date) - 1;
+    }
     const day = date.getDay();
     return weekdays[day];
   }
@@ -79,22 +82,6 @@ const useApplicationData = () => {
     })
   };
 
-  // helper func
-  const getDayId = id => {
-    let dayId = 0;
-    if (id > 20) {
-      dayId = 4;
-    } else if (id > 15) {
-      dayId = 3;
-    } else if (id > 10) {
-      dayId = 2;
-    } else if (id > 5) {
-      dayId = 1;
-    }
-
-    return dayId;
-  };
-
   function bookInterview(id, interview) {
     return Axios.put(`/api/appointments/${id}`, { interview }).then(
       response => {
@@ -111,7 +98,7 @@ const useApplicationData = () => {
 
           // only change spots if saving a new appointment, rather than on edit
           if (!state.appointments[id].interview) {
-            const dayId = getDayId(id);
+            const dayId = getWeekDay(state.day);
             const days = updateObjectInArray(state.days, {index: dayId, item: state.days[dayId].spots - 1});
             dispatch({type: SET_SPOTS, value: days})
           }
@@ -137,7 +124,7 @@ const useApplicationData = () => {
           [id]: appointment
         };
 
-        const dayId = getDayId(id);
+        const dayId = getWeekDay(state.day);
         const days = updateObjectInArray(state.days, {index: dayId, item: state.days[dayId].spots + 1});
         dispatch({type: SET_SPOTS, value: days})
         dispatch({ type: SET_INTERVIEW, value: appointments });

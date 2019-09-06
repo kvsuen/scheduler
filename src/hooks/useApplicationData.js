@@ -82,6 +82,22 @@ const useApplicationData = () => {
     })
   };
 
+  // helper func
+  const getDayId = (appointmentId) => {
+    let dayId = 0;
+    if (appointmentId > 20) {
+      dayId = 4;
+    } else if (appointmentId > 15) {
+      dayId = 3;
+    } else if (appointmentId > 10) {
+      dayId = 2;
+    } else if (appointmentId > 5) {
+      dayId = 1;
+    }
+
+    return dayId;
+  };
+
   function bookInterview(id, interview) {
     return Axios.put(`/api/appointments/${id}`, { interview }).then(
       response => {
@@ -96,7 +112,8 @@ const useApplicationData = () => {
             [id]: appointment
           };
 
-          // only change spots if saving a new appointment, rather than on edit
+          // check if user is editing existing appointment or adding new
+          // only dispatch a change for spot state if adding new
           if (!state.appointments[id].interview) {
             const dayId = getWeekDay(state.day);
             const days = updateObjectInArray(state.days, {index: dayId, item: state.days[dayId].spots - 1});
@@ -133,6 +150,49 @@ const useApplicationData = () => {
       }
     });
   };
+
+  // websocket
+  useEffect(() => {
+    const sock = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+    sock.onopen = () => {
+      sock.send("ping");
+    };
+    sock.onmessage = event => {
+      // console.log('Messaged recieved:', JSON.parse(event.data));
+      if (JSON.parse(event.data).type === SET_INTERVIEW) {
+        const { type, id, interview } = JSON.parse(event.data)
+        const dayId = getDayId(id);
+        
+        const appointment = {
+          ...state.appointments[id],
+          interview: { ...interview }
+        };
+        
+        // check if interview is deleted
+        if (!interview) {
+          appointment.interview = null;
+          const days = updateObjectInArray(state.days, {index: dayId, item: state.days[dayId].spots + 1});
+          dispatch({type: SET_SPOTS, value: days})
+        }
+
+        // check if user is editing existing appointment or adding new
+        // only dispatch a change for spot state if adding new
+        if (!state.appointments[id].interview) {
+          const days = updateObjectInArray(state.days, {index: dayId, item: state.days[dayId].spots - 1});
+          dispatch({type: SET_SPOTS, value: days})
+        }
+
+        const appointments = {
+          ...state.appointments,
+          [id]: appointment
+        };
+        
+        dispatch({type: type, value: appointments })
+      }
+    }
+
+    return () => { sock.close(); };
+  }, [state])
 
   return {
     state,

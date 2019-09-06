@@ -39,12 +39,19 @@ const useApplicationData = () => {
   };
 
   const getWeekDay = date => {
-    const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     if (typeof date === 'string') {
-      return weekdays.indexOf(date) - 1;
+      return weekdays.indexOf(date);
     }
+
     const day = date.getDay();
-    return weekdays[day];
+    // scheduler exludes saturday and sunday
+    // day of 0 is sunday, day of 6 is saturday
+    if (day === 0 || day === 6) {
+      return 0;
+    } else {
+      return weekdays[day - 1];
+    }
   }
 
   const [state, dispatch] = useReducer(reducer, {

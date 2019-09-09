@@ -6,7 +6,7 @@ import 'components/InterviewerList.scss';
 
 export default function InterviewerList(props) {
   InterviewerList.propTypes = {
-    value: PropTypes.string,
+    value: PropTypes.number,
     onChange: PropTypes.func.isRequired
   };
 

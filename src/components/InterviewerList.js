@@ -1,8 +1,16 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import InterviewerListItem from './InterviewerListItem'
 import 'components/InterviewerList.scss';
 
-export default function DayList(props) {
+export default function InterviewerList(props) {
+  InterviewerList.propTypes = {
+    value: PropTypes.string,
+    onChange: PropTypes.func.isRequired
+  };
+
+  
   const interviewers = props.interviewers.map(interviewer => {
     return (
       <InterviewerListItem

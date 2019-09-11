@@ -27,7 +27,7 @@ const useApplicationData = () => {
   }
 
   const [state, dispatch] = useReducer(reducer, {
-    day: getWeekDay(new Date()),
+    day: "Monday",
     days: [],
     appointments: {},
     interviewers: {}

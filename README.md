@@ -9,10 +9,10 @@ All of the data is persisted by an API server using a PostgreSQL database. Unit 
 ## Final Product
 
 Adding an appointment: 
-![Adding appointment](https://i.gyazo.com/f6759922de3241525053e68e5ffbf5dd.gif)
+![Adding appointment](https://camo.githubusercontent.com/4ce5a012fc0bfdcc6ac36efb9b15836bacf8d8f2/68747470733a2f2f692e6779617a6f2e636f6d2f66363735393932326465333234313532353035336536386535666662663564642e676966)
 
 Canceling an appointment:
-![Canceling appointment](https://i.gyazo.com/eca8ee6bb1ffa9c62fd190cf406ba67f.gif)
+![Canceling appointment](https://camo.githubusercontent.com/befa505851b6082db39fb595e6a545b12408caf5/68747470733a2f2f692e6779617a6f2e636f6d2f65636138656536626231666661396336326664313930636634303662613637662e676966)
 
 ## Getting Started
 Note: The [scheduler-api](https://github.com/kvsuen/scheduler-api) server will also need to be running. Both servers run concurrently; requests are proxied from the Webpack development server to the API server.
